@@ -1,0 +1,33 @@
+services:
+  api-dev:
+    build:
+      context: .
+      target: dev
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+    command: npx tsx watch src/server/server | pino-pretty
+    stdin_open: true
+    tty: true
+  api-prod:
+    build:
+      context: .
+      target: production
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+    command: node ./dist/web/api/server.js
+  db:
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
